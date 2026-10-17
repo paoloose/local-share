@@ -1,0 +1,10 @@
+{
+  "name": "paoloose-share",
+  "version": "1.0.0",
+  "description": "A shared bucket for dropping files. No logins, no auth, just vibes.",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch server.ts",
+    "start": "bun server.ts"
+  }
+}

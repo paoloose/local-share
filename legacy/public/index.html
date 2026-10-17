@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>paoloose share</title>
+  <link rel="stylesheet" href="/style.css?v=20261017" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">p</span>
+      <span class="brand-name">paoloose share</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="bucket-chip" class="chip" type="button" title="Switch bucket">
+        <span class="chip-label">bucket:</span>
+        <strong id="bucket-name">none</strong>
+      </button>
+      <button id="owner-chip" class="chip" type="button" title="Change your name">
+        <span class="chip-label">you:</span>
+        <strong id="owner-name">none</strong>
+      </button>
+      <button id="upload-btn" class="btn btn-primary" type="button">+ Upload files</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="toolbar">
+      <input id="search" class="search" type="search" placeholder="Search files or owners..." />
+      <select id="sort" class="select">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="owner">Owner (A-Z)</option>
+        <option value="name">Name (A-Z)</option>
+        <option value="type">Type</option>
+      </select>
+    </section>
+
+    <section id="file-list" class="file-list" aria-live="polite"></section>
+
+    <div id="empty-state" class="empty hidden">
+      <div class="empty-icon"></div>
+      <h2>No files dropped yet</h2>
+      <p>Hit <strong>+ Upload files</strong> and drop anything into this bucket.</p>
+    </div>
+  </main>
+
+  <div id="modal-identity" class="backdrop">
+    <form id="identity-form" class="modal" autocomplete="off">
+      <h2>Who are you?</h2>
+      <p class="muted">No logins here. Tell the bucket who is dropping files. Impersonation is a feature.</p>
+      <input id="identity-input" class="input" type="text" maxlength="64" placeholder="Your display name" />
+      <p id="identity-error" class="field-error" hidden></p>
+      <div class="modal-actions">
+        <button id="identity-save" class="btn btn-primary" type="submit">That's me</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="modal-bucket" class="backdrop">
+    <form id="bucket-form" class="modal" autocomplete="off">
+      <h2>Open a bucket</h2>
+      <p class="muted">A bucket is just a folder name on disk. No auth. Type a name or pick an existing one.</p>
+      <input id="bucket-input" class="input" type="text" maxlength="64" placeholder="e.g. team-dump" />
+      <p id="bucket-error" class="field-error" hidden></p>
+      <div id="bucket-list" class="bucket-list"></div>
+      <div class="modal-actions">
+        <button id="bucket-cancel" class="btn btn-ghost hidden" type="button">Cancel</button>
+        <button id="bucket-save" class="btn btn-primary" type="submit">Open bucket</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="modal-upload" class="backdrop">
+    <div class="modal">
+      <h2>Drop files into <span id="upload-bucket" class="accent"></span></h2>
+      <div id="dropzone" class="dropzone">
+        <div class="dropzone-icon"></div>
+        <p><strong>Drag and drop</strong> files here</p>
+        <p class="muted">or</p>
+        <button id="browse-btn" class="btn btn-ghost" type="button">Browse files</button>
+        <input id="file-input" type="file" multiple hidden />
+      </div>
+      <ul id="upload-queue" class="queue"></ul>
+      <div class="modal-actions">
+        <button id="upload-cancel" class="btn btn-ghost" type="button">Close</button>
+        <button id="upload-start" class="btn btn-primary" type="button" disabled>Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-rename" class="backdrop">
+    <form id="rename-form" class="modal" autocomplete="off">
+      <h2>Rename file</h2>
+      <input id="rename-input" class="input" type="text" maxlength="255" />
+      <p id="rename-error" class="field-error" hidden></p>
+      <div class="modal-actions">
+        <button id="rename-cancel" class="btn btn-ghost" type="button">Cancel</button>
+        <button id="rename-save" class="btn btn-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="modal-confirm" class="backdrop">
+    <div class="modal">
+      <h2>Delete file?</h2>
+      <p id="confirm-text" class="muted"></p>
+      <div class="modal-actions">
+        <button id="confirm-cancel" class="btn btn-ghost" type="button">Keep it</button>
+        <button id="confirm-delete" class="btn btn-danger" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="alert" hidden></div>
+
+  <script src="/app.js?v=20261017"></script>
+</body>
+</html>
