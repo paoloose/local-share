@@ -1,0 +1,13 @@
+# Data (user content, never committed)
+buckets/
+
+# Build outputs
+/target/
+
+# Vendored framework clone used only as an examples reference
+/leptos/
+
+# Tooling and editor state
+node_modules/
+.commandcode/
+.vscode/
