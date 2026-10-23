@@ -99,7 +99,9 @@ leptos/               reference clone of the framework repo, not built
   - `EventBus` (tokio broadcast, capacity 256) with `publish`/`subscribe`.
   - `spawn_fs_watcher`: `notify` recursive watcher over the buckets dir,
     canonicalized root (notify reports absolute paths).
-  - `translate` rules: `.tmp` skipped; `meta.json` changes -> `changed` event
+  - `translate` rules: reads (notify `Access` events) are ignored, otherwise
+    every `list_files` refetch would trigger the next one; `.tmp` skipped;
+    `meta.json` changes -> `changed` event
     (covers hand edits and other instances); `files/<uuid>` skipped (the app
     publishes precise events itself, avoiding races with its own writes);
     `files/<non-uuid>` -> auto `register_external` on create, `delete` on

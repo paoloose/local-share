@@ -65,6 +65,12 @@ fn translate(
     path: &std::path::Path,
     kind: &notify::EventKind,
 ) -> Option<FileEvent> {
+    // Reads are not mutations: inotify reports them as Access events, and
+    // mapping those to updates would make every refetch trigger the next one
+    // (a self-sustaining loop through the watcher).
+    if matches!(kind, notify::EventKind::Access(_)) {
+        return None;
+    }
     let relative = path.strip_prefix(root).ok()?;
     let mut components = relative.components();
     let bucket = BucketName::parse(&components.next()?.as_os_str().to_string_lossy()).ok()?;
@@ -123,6 +129,48 @@ fn translate(
     }
 
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use notify::event::{AccessKind, AccessMode, DataChange, ModifyKind};
+    use std::path::Path;
+
+    #[test]
+    fn reads_never_emit_events() {
+        let root = Path::new("/srv/buckets");
+        let manifest = root.join("andes/meta.json");
+        let blob = root.join("andes/files/report.pdf");
+
+        for path in [&manifest, &blob] {
+            assert!(translate(root, path, &notify::EventKind::Access(AccessKind::Read)).is_none());
+            assert!(
+                translate(root, path, &notify::EventKind::Access(AccessKind::Close(AccessMode::Read)))
+                    .is_none()
+            );
+        }
+    }
+
+    #[test]
+    fn manifest_writes_emit_changed_events() {
+        let root = Path::new("/srv/buckets");
+        let manifest = root.join("andes/meta.json");
+
+        let event = translate(
+            root,
+            &manifest,
+            &notify::EventKind::Modify(ModifyKind::Data(DataChange::Content)),
+        )
+        .expect("manifest writes must be reported");
+        assert_eq!(event.bucket, "andes");
+        assert_eq!(event.kind, FileEventKind::Changed);
+
+        assert!(
+            translate(root, &manifest, &notify::EventKind::Modify(ModifyKind::Any)).is_some(),
+            "hand edits should still be reported"
+        );
+    }
 }
 
 /// `GET /api/events?bucket=<name>`: server-sent events for one bucket.
